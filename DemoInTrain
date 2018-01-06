@@ -1,0 +1,312 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import ConfigParser
+import requests
+from bs4 import BeautifulSoup
+import re
+from langdetect import detect_langs,detect,DetectorFactory
+from collections import Counter
+#from impala.dbapi import connect
+import codecs
+import string
+from operator import add
+import operator
+import sys
+import json
+from LexTo import LexTo
+import time
+import datetime
+
+
+-- Sample
+import requests
+
+
+url_string = "https://www.sanook.com"
+
+page = requests.get(url_string, timeout=10)
+page.headers['content-type']
+--page.encoding='utf-8'
+page.encoding='tis-620'
+
+sys.setdefaultencoding('utf-8')
+
+-- print(page.text[1:1000])
+-- print(len(page.text))
+
+s=page.text
+
+
+"""  htmlRemoval ------------------------------------------------------------------------------------
+def htmlRemoval(s):
+	textNoScript = re.subn(r'<(script).*?</\1>(?s)', '', s)
+	textNoCSS = re.subn(r'<(style).*?</\1>(?s)', '', textNoScript[0])
+	soup = BeautifulSoup(textNoCSS[0],"html.parser")
+	texturl = soup.get_text()
+	textNoHTMLTag = re.sub('<[^>]*>', '', texturl)
+	return textNoHTMLTag
+"""
+-- Sample
+import re
+
+textNoScript = re.subn(r'<(script).*?</\1>(?s)', '', s)
+-- print(textNoScript[0][1:1000])
+-- print(len(textNoScript[0]))
+
+textNoCSS = re.subn(r'<(style).*?</\1>(?s)', '', textNoScript[0]).
+-- print(textNoCSS[0][1:1000])
+-- print(len(textNoScript[0]))
+
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(textNoCSS[0],"html.parser")
+texturl = soup.get_text()
+
+-- print(texturl[1:1000])
+-- print(len(texturl))
+
+textNoHTMLTag = re.sub('<[^>]*>', '', texturl)
+
+-- print(textNoHTMLTag[1:1000])
+-- print(len(textNoHTMLTag))
+	
+
+"""  punctuationRemoval ------------------------------------------------------------------------------------
+import string
+
+def punctuationRemoval(s):
+	word = s.replace(":"," ")
+	word = word.replace("/"," ")
+	word = word.replace("."," ")
+	word = word.replace(","," ")
+	word = word.replace("!"," ")
+	word = word.replace("@"," ")
+	word = word.replace("#"," ")
+	word = word.replace("$"," ")
+	word = word.replace("%"," ")
+	word = word.replace("^"," ")
+	word = word.replace("&"," ")
+	word = word.replace("*"," ")
+	word = word.replace("("," ")
+	word = word.replace(")"," ")
+	word = word.replace("-"," ")
+	word = word.replace("_"," ")
+	word = word.replace("+"," ")
+	word = word.replace("="," ")
+	word = word.replace("["," ")
+	word = word.replace("]"," ")
+	word = word.replace("{"," ")
+	word = word.replace("}"," ")
+	word = word.replace(";"," ")
+	word = word.replace("'"," ")
+	word = word.replace('"'," ")
+	word = word.replace("<"," ")
+	word = word.replace(">"," ")
+	word = word.replace("?"," ")
+	word = word.replace("\\"," ")
+	word = word.replace("|"," ")
+	word = word.replace("`"," ")
+	word = word.replace("~"," ")
+	word = word.replace("\t"," ")
+	word = word.replace("\n"," ")
+	word = re.sub(' +', ' ', word)
+	return word
+""" 
+-- Sample
+import string
+
+s = textNoHTMLTag.lower()
+word = s.replace(":"," ")
+word = word.replace("/"," ")
+word = word.replace("."," ")
+word = word.replace(","," ")
+word = word.replace("!"," ")
+word = word.replace("@"," ")
+word = word.replace("#"," ")
+word = word.replace("$"," ")
+word = word.replace("%"," ")
+word = word.replace("^"," ")
+word = word.replace("&"," ")
+word = word.replace("*"," ")
+word = word.replace("("," ")
+word = word.replace(")"," ")
+word = word.replace("-"," ")
+word = word.replace("_"," ")
+word = word.replace("+"," ")
+word = word.replace("="," ")
+word = word.replace("["," ")
+word = word.replace("]"," ")
+word = word.replace("{"," ")
+word = word.replace("}"," ")
+word = word.replace(";"," ")
+word = word.replace("'"," ")
+word = word.replace('"'," ")
+word = word.replace("<"," ")
+word = word.replace(">"," ")
+word = word.replace("?"," ")
+word = word.replace("\\"," ")
+word = word.replace("|"," ")
+word = word.replace("`"," ")
+word = word.replace("~"," ")
+word = word.replace("\t"," ")
+word = word.replace("\n"," ")
+word = re.sub(' +', ' ', word)
+-- print(word[1:1000])
+
+"""  Thai Word Detect and Cut. ------------------------------------------------------------------------------------
+
+def detectLang(s):
+	try:
+		if 'th' in str(detect_langs(s)):
+			return 'th'
+		else:
+			return 'en'
+	except:
+		return 'en'
+		
+def thaiWordTokenizer(s):
+	tmp = ' '.join(lexto.tokenize(s))
+	return tmp
+	
+"""
+from langdetect import detect_langs,detect,DetectorFactory
+
+-- Sample
+if 'th' == detectLang(text):
+	text = thaiWordTokenizer(text)
+				
+try:
+	if 'th' in str(detect_langs(word)):
+		print('th')
+	else:
+		print('en')
+except:
+	print('en-oth')
+
+"""  stopWordRemoval  ----------------------------------------------------------------------------------------------
+[cleansing]
+stopword = set(["will","size","date","time","datetime","year","years","month","months","jan","january","feb","febuary","mar","march","april","may","jun","june","jul","july","aug","august","sep","september","oct","october","nov","november","dec","december","mon","monday","tue","tuesday","wed","wednesday","thu","thursday","fri","friday","sat","saturday","sun","sunday","day","days","week","weeks","hour","hours","min","minute","minutes","sec","second","seconds","people","person","comment","comments","site","sites","share","shares","sign","men","man","woman","women","feature","features","play","plays","playing","support","supports","post","posts","topic","topics","help","helps","helping","effect","effects","list","lists","color","colour","search","searches","community","communities","tool","tools","text","texte","editor","editors","add","minus","perso","password","home","homes","download","downloads","check","checks","overview","overviews","mit","von","der","sie","pickup","price","prices","style","styles","les","des","par","son","bis","result","results","link","links","team","teams","prix","emd","sta","today","tomorrow","yesterday","case","cases","test","tests","das","zum","kia","auf","suv","var","term","terms","option","options","special","specials","yazan","sur","review","reviews","box","score","scores","auto","point","points","center","alle","set","sets","value","mai","mais","mult","pentru","este","cum","dar","din","sunt","poate","vor","para","con","por","custom","customs","panier","adicionar","ace","mehr","select","selects","ist","het","oder","ein","bei","online","onlines","heute","det","als","adds","checkout","checkouts","average","averages","duration","durations","order","orders","save","saves","access","accesses","jetzt","dan","dans","del","kraj","frasi","avec","che","los","mot","nel","tutti","pour","deal","deals","favor","fare","fares","toll","palm","call","calls","copy","trl","calculation","buena","functions","function","number","numbers","enter","please","pleases","join","joins","account","accounts","versie","vision","visions","success","incl","anh","projekty","dom","jak","vedi","tutte","pow","reklama","wszystkie","projektu","czy","projekt","nach","instalacje","siempre","submenu","voir","ewe","inserts","insert","press","presses","division","wir","browse","browses","kosher","ver","agregar","a","able","about","above","abst","accordance","according","accordingly","across","act","actually","added","adj","affected","affecting","affects","after","afterwards","again","against","ah","all","almost","alone","along","already","also","although","always","am","among","amongst","an","and","announce","another","any","anybody","anyhow","anymore","anyone","anything","anyway","anyways","anywhere","apparently","approximately","are","aren","arent","arise","around","as","aside","ask","asking","at","auth","available","away","awfully","b","back","be","became","because","become","becomes","becoming","been","before","beforehand","begin","beginning","beginnings","begins","behind","being","believe","below","beside","besides","between","beyond","biol","both","brief","briefly","but","by","c","ca","came","can","cannot","cant","cause","causes","certain","certainly","co","com","come","comes","contain","containing","contains","could","couldnt","d","did","didnt","different","do","does","doesnt","doing","done","dont","down","downwards","due","during","e","each","ed","edu","eg","eight","eighty","either","else","elsewhere","end","ending","enough","especially","et","etal","etc","even","ever","every","everybody","everyone","everything","everywhere","ex","except","f","far","few","ff","fifth","first","five","fix","followed","following","follows","for","former","formerly","forth","found","four","from","further","furthermore","g","gave","get","gets","getting","give","given","gives","giving","go","goes","gone","got","gotten","h","had","happens","hardly","has","hasnt","have","havent","having","he","hed","hence","her","here","hereafter","hereby","herein","heres","hereupon","hers","herself","hes","hi","hid","him","himself","his","hither","how","howbeit","however","hundred","i","id","ie","if","ill","im","immediate","immediately","importance","important","in","inc","indeed","index","information","instead","into","invention","inward","is","isnt","it","itd","itll","its","itself","ive","j","just","k","keep","keeps","kept","kg","km","know","known","knows","l","largely","last","lately","later","latter","latterly","least","less","lest","let","lets","like","liked","likely","line","little","look","looking","looks","ltd","m","made","mainly","make","makes","many","maybe","me","mean","means","meantime","meanwhile","merely","mg","might","million","miss","ml","more","moreover","most","mostly","mr","mrs","much","mug","must","my","myself","n","na","name","namely","nay","nd","near","nearly","necessarily","necessary","need","needs","neither","never","nevertheless","new","next","nine","ninety","no","nobody","non","none","nonetheless","noone","nor","normally","nos","not","noted","nothing","now","nowhere","o","obtain","obtained","obviously","of","off","often","oh","ok","okay","old","omitted","on","once","one","ones","only","onto","or","ord","other","others","otherwise","ought","our","ours","ourselves","out","outside","over","overall","owing","own","p","page","pages","part","particular","particularly","past","per","perhaps","placed","plus","poorly","possible","possibly","potentially","pp","predominantly","present","previously","primarily","probably","promptly","proud","provides","put","q","que","quickly","quite","qv","r","ran","rather","rd","re","readily","really","recent","recently","ref","refs","regarding","regardless","regards","related","relatively","research","respectively","resulted","resulting","right","run","s","said","same","saw","say","saying","says","section","see","seeing","seem","seemed","seeming","seems","seen","self","selves","sent","seven","several","shall","she","shed","shell","shes","should","shouldnt","show","showed","shown","showns","shows","significant","significantly","similar","similarly","since","six","slightly","so","some","somebody","somehow","someone","somethan","something","sometime","sometimes","somewhat","somewhere","soon","sorry","specifically","specified","specify","specifying","still","stop","strongly","sub","substantially","successfully","such","sufficiently","suggest","sup","sure","take","taken","taking","tell","tends","th","than","thank","thanks","thanx","that","thatll","thats","thatve","the","their","theirs","them","themselves","then","thence","there","thereafter","thereby","thered","therefore","therein","therell","thereof","therere","theres","thereto","thereupon","thereve","these","they","theyd","theyll","theyre","theyve","think","this","those","thou","though","thoughh","thousand","throug","through","throughout","thru","thus","til","tip","to","together","too","took","toward","towards","tried","tries","truly","try","trying","ts","twice","two","u","un","under","unfortunately","unless","unlike","unlikely","until","unto","up","upon","ups","us","use","used","useful","usefully","usefulness","uses","using","usually","v","various","very","via","view","views","viewer","viz","vol","vols","vs","w","want","wants","was","wasnt","way","we","welcome","well","went","were","werent","weve","what","whatever","whatll","whats","when","whence","whenever","where","whereafter","whereas","whereby","wherein","wheres","whereupon","wherever","whether","which","while","whim","whither","who","whod","whoever","whole","wholl","whom","whomever","whos","whose","why","widely","willing","wish","with","within","without","wont","words","world","would","wouldnt","www","x","y","yes","yet","you","youd","youll","your","youre","yours","yourself","yourselves","youve","z","zero","category","categories","status","video","mens","guide","email","bons","gegen","report","reports","powder","dla","round","gruppe","mix","toate","die","deine","resto","einfach","easy","temu","dni","tanie","und","jahr","woche","dem","pod","molto","visit","privacy","service","rund","bola","wynik","semaines","przez","roku","wie","jest","sobie","city","sobre","odpowiedzi","boletos","semana","protiv","highlights","highlight","break","times","fragen","click","clicks","parcours","draft","mock","field","ratings","rating","power","night","chart","heures","bonne","jour","gratuit","commentaires","bien","components","component","gali","czytaj","komentarzy","komentuj","dnia","nie","state","player","players","puntos","leaders","leader","jusquau","inkl","kommentare","den","iguais","detay","pas","ekle","details","detail","envoyer","services","cada","ihre","anzeigen","partir","avis","zobacz","alles","danach","och","zur","dos","vid","att","minimales","maximales","angebot","eine","content","sind","haben","erkek","tavo","gibt","qu"])
+stopword_th = set([u'ความ',u'ที่',u'การ',u'ถูกใจ',u'รัก',u'หลง',u'กลิ้ง',u'แสดง',u'คิดเห็น',u'ร่วม',u'รู้สึก',u'สยอง',u'ทึ่ง',u'ครับ',u'ค่ะ',u'คะ',u'คับ',u'คร่ะ',u'เวลา',u'กลับ',u'ซึ้ง',u'ตอบ',u'สมาชิก',u'หมายเลข',u'ไม่',u'ได้',u'มาก',u'เลย',u'นี้',u'เป็น',u'ว่า',u'เรา',u'เห็น',u'แล้ว',u'ให้',u'แต่',u'ถึง',u'ของ',u'กัน',u'อีก',u'และ',u'จาก',u'กลับ',u'รวม',u'ย่อย',u'อยู่',u'ด้วย',u'ต้อง',u'อยาก',u'วัน',u'แบบ',u'งาน',u'ประเทศ',u'กระทู้',u'มัน',u'เครื่อง',u'จริง',u'คุณ',u'ตัว',u'ไทย',u'ขึ้น',u'นัก',u'อย่าง',u'ขอบคุณ',u'ทุก',u'ใช้',u'น่า',u'นั้น',u'นี่',u'ตอน',u'เข้า',u'เหมือน',u'คือ',u'สุด',u'เมือง',u'เอง',u'ลูก',u'ต่าง',u'ชอบ',u'เมื่อ',u'ต่อ',u'เพราะ',u'เดิน',u'หน้า',u'ทาง',u'หรือ',u'ถ้า',u'เขา',u'ชีวิต',u'ตาม',u'อะไร',u'ภาค',u'คิด',u'อ่าน',u'เอา',u'ไว้',u'ผู้',u'ไหน',u'เพื่อ',u'เจอ',u'บอก',u'ก่อน',u'เรื่อง',u'ส่วน',u'เคย',u'ครั้ง',u'เดียว',u'รู้',u'เรียน',u'นั่ง',u'ยอด',u'ร้าน',u'ห้อง',u'บ้าง',u'โลก',u'บิน',u'สิ่ง',u'หลาย',u'ซื้อ',u'เค้า',u'เพื่อน',u'อื่น',u'แค่',u'บาง',u'ทั้ง',u'ภาษา',u'ค่า',u'แรก',u'ตั้ง',u'น้อง',u'ใหญ่',u'ลุง',u'ทาน',u'สอง',u'กลาง',u'น้อย',u'แก้ไข',u'สาย',u'จัง',u'ช่วง',u'เยอะ',u'ปัญหา',u'ชื่อ',u'ใหม่',u'หลัง',u'ใช่',u'หนัง',u'หลัง',u'พัก',u'เขียน',u'ถูก',u'โดย',u'พี่',u'สำหรับ',u'ติดต่อ',u'ผ่าน',u'ที่สุด',u'เท่า',u'เดือน',u'คืน',u'ตรง',u'ใคร',u'สร้าง',u'หนึ่ง',u'สาม',u'สี่',u'ห้า',u'หก',u'เจ็ด',u'แปด',u'เก้า',u'สิบ',u'เอ็ด',u'ยี่',u'มกราคม',u'กุมภาพันธ์',u'มีนาคม',u'เมษายน',u'พฤษภาคม',u'มิถุนายน',u'กรกฎาคม',u'สิงหาคม',u'กันยายน',u'ตุลาคม',u'พฤศจิกายน',u'ธันวาคม',u'ฝัน',u'สินค้า',u'พวก',u'จัด',u'ออนไลน์',u'โรง',u'สัก',u'อาจ',u'รุ่น',u'วัย',u'แต่ง',u'ฟ้า',u'เก็บ',u'หมด',u'สั้น',u'ไกล',u'เลือก',u'เพียง',u'วาด',u'ข้าง',u'มอง',u'จขกท',u'เธอ',u'พ่อ',u'ชาย',u'เลี้ยง',u'แห่ง',u'ราคา',u'ถาม',u'อัน',u'ไหม',u'รอบ',u'ประมาณ',u'รับ',u'ดวง',u'ง่าย',u'บาท',u'ทีม',u'ชาว',u'หน่อย',u'ลอง',u'ดัง',u'หัว',u'ยาว',u'บุคคล',u'นาน',u'กำลัง',u'ค่อย',u'สูง',u'ขนาด',u'ติด',u'นึง',u'ตลอด',u'เว็บไซต์',u'หญิง',u'ใส',u'คู่',u'ซึ่ง',u'รวดเร็ว',u'เกี่ยว'])
+filtering = jpg,png,jpeg,gif,mp4,mp3,tiff,line.naver,gstatic,/img/,.avi,generate_204,.dat,/file/,img,.crt,api,doubleclick,configuration,avd.innity.com,push.apple,bit.ly,akamaihd,aspx,hkextshort,download,images,cdn,graph.,ksmobile,ttf,appx.,onclickads,/plugins/,flashscore,googleusercontent,/user_icon/,wx.qlogo.cn,setting.,ggpht
+
+stopwordList = config.get("cleansing","stopword")
+stopwordTHList = config.get("cleansing","stopword_th")
+
+stopwordList = set(["will","size","date","time","datetime","year","years","month","months","jan","january","feb","febuary","mar","march","april","may","jun","june","jul","july","aug","august","sep","september","oct","october","nov","november","dec","december","mon","monday","tue","tuesday","wed","wednesday","thu","thursday","fri","friday","sat","saturday","sun","sunday","day","days","week","weeks","hour","hours","min","minute","minutes","sec","second","seconds","people","person","comment","comments","site","sites","share","shares","sign","men","man","woman","women","feature","features","play","plays","playing","support","supports","post","posts","topic","topics","help","helps","helping","effect","effects","list","lists","color","colour","search","searches","community","communities","tool","tools","text","texte","editor","editors","add","minus","perso","password","home","homes","download","downloads","check","checks","overview","overviews","mit","von","der","sie","pickup","price","prices","style","styles","les","des","par","son","bis","result","results","link","links","team","teams","prix","emd","sta","today","tomorrow","yesterday","case","cases","test","tests","das","zum","kia","auf","suv","var","term","terms","option","options","special","specials","yazan","sur","review","reviews","box","score","scores","auto","point","points","center","alle","set","sets","value","mai","mais","mult","pentru","este","cum","dar","din","sunt","poate","vor","para","con","por","custom","customs","panier","adicionar","ace","mehr","select","selects","ist","het","oder","ein","bei","online","onlines","heute","det","als","adds","checkout","checkouts","average","averages","duration","durations","order","orders","save","saves","access","accesses","jetzt","dan","dans","del","kraj","frasi","avec","che","los","mot","nel","tutti","pour","deal","deals","favor","fare","fares","toll","palm","call","calls","copy","trl","calculation","buena","functions","function","number","numbers","enter","please","pleases","join","joins","account","accounts","versie","vision","visions","success","incl","anh","projekty","dom","jak","vedi","tutte","pow","reklama","wszystkie","projektu","czy","projekt","nach","instalacje","siempre","submenu","voir","ewe","inserts","insert","press","presses","division","wir","browse","browses","kosher","ver","agregar","a","able","about","above","abst","accordance","according","accordingly","across","act","actually","added","adj","affected","affecting","affects","after","afterwards","again","against","ah","all","almost","alone","along","already","also","although","always","am","among","amongst","an","and","announce","another","any","anybody","anyhow","anymore","anyone","anything","anyway","anyways","anywhere","apparently","approximately","are","aren","arent","arise","around","as","aside","ask","asking","at","auth","available","away","awfully","b","back","be","became","because","become","becomes","becoming","been","before","beforehand","begin","beginning","beginnings","begins","behind","being","believe","below","beside","besides","between","beyond","biol","both","brief","briefly","but","by","c","ca","came","can","cannot","cant","cause","causes","certain","certainly","co","com","come","comes","contain","containing","contains","could","couldnt","d","did","didnt","different","do","does","doesnt","doing","done","dont","down","downwards","due","during","e","each","ed","edu","eg","eight","eighty","either","else","elsewhere","end","ending","enough","especially","et","etal","etc","even","ever","every","everybody","everyone","everything","everywhere","ex","except","f","far","few","ff","fifth","first","five","fix","followed","following","follows","for","former","formerly","forth","found","four","from","further","furthermore","g","gave","get","gets","getting","give","given","gives","giving","go","goes","gone","got","gotten","h","had","happens","hardly","has","hasnt","have","havent","having","he","hed","hence","her","here","hereafter","hereby","herein","heres","hereupon","hers","herself","hes","hi","hid","him","himself","his","hither","how","howbeit","however","hundred","i","id","ie","if","ill","im","immediate","immediately","importance","important","in","inc","indeed","index","information","instead","into","invention","inward","is","isnt","it","itd","itll","its","itself","ive","j","just","k","keep","keeps","kept","kg","km","know","known","knows","l","largely","last","lately","later","latter","latterly","least","less","lest","let","lets","like","liked","likely","line","little","look","looking","looks","ltd","m","made","mainly","make","makes","many","maybe","me","mean","means","meantime","meanwhile","merely","mg","might","million","miss","ml","more","moreover","most","mostly","mr","mrs","much","mug","must","my","myself","n","na","name","namely","nay","nd","near","nearly","necessarily","necessary","need","needs","neither","never","nevertheless","new","next","nine","ninety","no","nobody","non","none","nonetheless","noone","nor","normally","nos","not","noted","nothing","now","nowhere","o","obtain","obtained","obviously","of","off","often","oh","ok","okay","old","omitted","on","once","one","ones","only","onto","or","ord","other","others","otherwise","ought","our","ours","ourselves","out","outside","over","overall","owing","own","p","page","pages","part","particular","particularly","past","per","perhaps","placed","plus","poorly","possible","possibly","potentially","pp","predominantly","present","previously","primarily","probably","promptly","proud","provides","put","q","que","quickly","quite","qv","r","ran","rather","rd","re","readily","really","recent","recently","ref","refs","regarding","regardless","regards","related","relatively","research","respectively","resulted","resulting","right","run","s","said","same","saw","say","saying","says","section","see","seeing","seem","seemed","seeming","seems","seen","self","selves","sent","seven","several","shall","she","shed","shell","shes","should","shouldnt","show","showed","shown","showns","shows","significant","significantly","similar","similarly","since","six","slightly","so","some","somebody","somehow","someone","somethan","something","sometime","sometimes","somewhat","somewhere","soon","sorry","specifically","specified","specify","specifying","still","stop","strongly","sub","substantially","successfully","such","sufficiently","suggest","sup","sure","take","taken","taking","tell","tends","th","than","thank","thanks","thanx","that","thatll","thats","thatve","the","their","theirs","them","themselves","then","thence","there","thereafter","thereby","thered","therefore","therein","therell","thereof","therere","theres","thereto","thereupon","thereve","these","they","theyd","theyll","theyre","theyve","think","this","those","thou","though","thoughh","thousand","throug","through","throughout","thru","thus","til","tip","to","together","too","took","toward","towards","tried","tries","truly","try","trying","ts","twice","two","u","un","under","unfortunately","unless","unlike","unlikely","until","unto","up","upon","ups","us","use","used","useful","usefully","usefulness","uses","using","usually","v","various","very","via","view","views","viewer","viz","vol","vols","vs","w","want","wants","was","wasnt","way","we","welcome","well","went","were","werent","weve","what","whatever","whatll","whats","when","whence","whenever","where","whereafter","whereas","whereby","wherein","wheres","whereupon","wherever","whether","which","while","whim","whither","who","whod","whoever","whole","wholl","whom","whomever","whos","whose","why","widely","willing","wish","with","within","without","wont","words","world","would","wouldnt","www","x","y","yes","yet","you","youd","youll","your","youre","yours","yourself","yourselves","youve","z","zero","category","categories","status","video","mens","guide","email","bons","gegen","report","reports","powder","dla","round","gruppe","mix","toate","die","deine","resto","einfach","easy","temu","dni","tanie","und","jahr","woche","dem","pod","molto","visit","privacy","service","rund","bola","wynik","semaines","przez","roku","wie","jest","sobie","city","sobre","odpowiedzi","boletos","semana","protiv","highlights","highlight","break","times","fragen","click","clicks","parcours","draft","mock","field","ratings","rating","power","night","chart","heures","bonne","jour","gratuit","commentaires","bien","components","component","gali","czytaj","komentarzy","komentuj","dnia","nie","state","player","players","puntos","leaders","leader","jusquau","inkl","kommentare","den","iguais","detay","pas","ekle","details","detail","envoyer","services","cada","ihre","anzeigen","partir","avis","zobacz","alles","danach","och","zur","dos","vid","att","minimales","maximales","angebot","eine","content","sind","haben","erkek","tavo","gibt","qu"])
+
+def stopWordRemoval(s):
+	global stopwordList,stopwordTHList
+	return ' '.join([word for word in s.split(' ') if word not in stopwordList])
+
+
+text = stopWordRemoval(text)
+	
+"""
+stopwordList = set(["will","size","date","time","datetime","year","years","month","months","jan","january","feb","febuary","mar","march","april","may","jun","june","jul","july","aug","august","sep","september","oct","october","nov","november","dec","december","mon","monday","tue","tuesday","wed","wednesday","thu","thursday","fri","friday","sat","saturday","sun","sunday","day","days","week","weeks","hour","hours","min","minute","minutes","sec","second","seconds","people","person","comment","comments","site","sites","share","shares","sign","men","man","woman","women","feature","features","play","plays","playing","support","supports","post","posts","topic","topics","help","helps","helping","effect","effects","list","lists","color","colour","search","searches","community","communities","tool","tools","text","texte","editor","editors","add","minus","perso","password","home","homes","download","downloads","check","checks","overview","overviews","mit","von","der","sie","pickup","price","prices","style","styles","les","des","par","son","bis","result","results","link","links","team","teams","prix","emd","sta","today","tomorrow","yesterday","case","cases","test","tests","das","zum","kia","auf","suv","var","term","terms","option","options","special","specials","yazan","sur","review","reviews","box","score","scores","auto","point","points","center","alle","set","sets","value","mai","mais","mult","pentru","este","cum","dar","din","sunt","poate","vor","para","con","por","custom","customs","panier","adicionar","ace","mehr","select","selects","ist","het","oder","ein","bei","online","onlines","heute","det","als","adds","checkout","checkouts","average","averages","duration","durations","order","orders","save","saves","access","accesses","jetzt","dan","dans","del","kraj","frasi","avec","che","los","mot","nel","tutti","pour","deal","deals","favor","fare","fares","toll","palm","call","calls","copy","trl","calculation","buena","functions","function","number","numbers","enter","please","pleases","join","joins","account","accounts","versie","vision","visions","success","incl","anh","projekty","dom","jak","vedi","tutte","pow","reklama","wszystkie","projektu","czy","projekt","nach","instalacje","siempre","submenu","voir","ewe","inserts","insert","press","presses","division","wir","browse","browses","kosher","ver","agregar","a","able","about","above","abst","accordance","according","accordingly","across","act","actually","added","adj","affected","affecting","affects","after","afterwards","again","against","ah","all","almost","alone","along","already","also","although","always","am","among","amongst","an","and","announce","another","any","anybody","anyhow","anymore","anyone","anything","anyway","anyways","anywhere","apparently","approximately","are","aren","arent","arise","around","as","aside","ask","asking","at","auth","available","away","awfully","b","back","be","became","because","become","becomes","becoming","been","before","beforehand","begin","beginning","beginnings","begins","behind","being","believe","below","beside","besides","between","beyond","biol","both","brief","briefly","but","by","c","ca","came","can","cannot","cant","cause","causes","certain","certainly","co","com","come","comes","contain","containing","contains","could","couldnt","d","did","didnt","different","do","does","doesnt","doing","done","dont","down","downwards","due","during","e","each","ed","edu","eg","eight","eighty","either","else","elsewhere","end","ending","enough","especially","et","etal","etc","even","ever","every","everybody","everyone","everything","everywhere","ex","except","f","far","few","ff","fifth","first","five","fix","followed","following","follows","for","former","formerly","forth","found","four","from","further","furthermore","g","gave","get","gets","getting","give","given","gives","giving","go","goes","gone","got","gotten","h","had","happens","hardly","has","hasnt","have","havent","having","he","hed","hence","her","here","hereafter","hereby","herein","heres","hereupon","hers","herself","hes","hi","hid","him","himself","his","hither","how","howbeit","however","hundred","i","id","ie","if","ill","im","immediate","immediately","importance","important","in","inc","indeed","index","information","instead","into","invention","inward","is","isnt","it","itd","itll","its","itself","ive","j","just","k","keep","keeps","kept","kg","km","know","known","knows","l","largely","last","lately","later","latter","latterly","least","less","lest","let","lets","like","liked","likely","line","little","look","looking","looks","ltd","m","made","mainly","make","makes","many","maybe","me","mean","means","meantime","meanwhile","merely","mg","might","million","miss","ml","more","moreover","most","mostly","mr","mrs","much","mug","must","my","myself","n","na","name","namely","nay","nd","near","nearly","necessarily","necessary","need","needs","neither","never","nevertheless","new","next","nine","ninety","no","nobody","non","none","nonetheless","noone","nor","normally","nos","not","noted","nothing","now","nowhere","o","obtain","obtained","obviously","of","off","often","oh","ok","okay","old","omitted","on","once","one","ones","only","onto","or","ord","other","others","otherwise","ought","our","ours","ourselves","out","outside","over","overall","owing","own","p","page","pages","part","particular","particularly","past","per","perhaps","placed","plus","poorly","possible","possibly","potentially","pp","predominantly","present","previously","primarily","probably","promptly","proud","provides","put","q","que","quickly","quite","qv","r","ran","rather","rd","re","readily","really","recent","recently","ref","refs","regarding","regardless","regards","related","relatively","research","respectively","resulted","resulting","right","run","s","said","same","saw","say","saying","says","section","see","seeing","seem","seemed","seeming","seems","seen","self","selves","sent","seven","several","shall","she","shed","shell","shes","should","shouldnt","show","showed","shown","showns","shows","significant","significantly","similar","similarly","since","six","slightly","so","some","somebody","somehow","someone","somethan","something","sometime","sometimes","somewhat","somewhere","soon","sorry","specifically","specified","specify","specifying","still","stop","strongly","sub","substantially","successfully","such","sufficiently","suggest","sup","sure","take","taken","taking","tell","tends","th","than","thank","thanks","thanx","that","thatll","thats","thatve","the","their","theirs","them","themselves","then","thence","there","thereafter","thereby","thered","therefore","therein","therell","thereof","therere","theres","thereto","thereupon","thereve","these","they","theyd","theyll","theyre","theyve","think","this","those","thou","though","thoughh","thousand","throug","through","throughout","thru","thus","til","tip","to","together","too","took","toward","towards","tried","tries","truly","try","trying","ts","twice","two","u","un","under","unfortunately","unless","unlike","unlikely","until","unto","up","upon","ups","us","use","used","useful","usefully","usefulness","uses","using","usually","v","various","very","via","view","views","viewer","viz","vol","vols","vs","w","want","wants","was","wasnt","way","we","welcome","well","went","were","werent","weve","what","whatever","whatll","whats","when","whence","whenever","where","whereafter","whereas","whereby","wherein","wheres","whereupon","wherever","whether","which","while","whim","whither","who","whod","whoever","whole","wholl","whom","whomever","whos","whose","why","widely","willing","wish","with","within","without","wont","words","world","would","wouldnt","www","x","y","yes","yet","you","youd","youll","your","youre","yours","yourself","yourselves","youve","z","zero","category","categories","status","video","mens","guide","email","bons","gegen","report","reports","powder","dla","round","gruppe","mix","toate","die","deine","resto","einfach","easy","temu","dni","tanie","und","jahr","woche","dem","pod","molto","visit","privacy","service","rund","bola","wynik","semaines","przez","roku","wie","jest","sobie","city","sobre","odpowiedzi","boletos","semana","protiv","highlights","highlight","break","times","fragen","click","clicks","parcours","draft","mock","field","ratings","rating","power","night","chart","heures","bonne","jour","gratuit","commentaires","bien","components","component","gali","czytaj","komentarzy","komentuj","dnia","nie","state","player","players","puntos","leaders","leader","jusquau","inkl","kommentare","den","iguais","detay","pas","ekle","details","detail","envoyer","services","cada","ihre","anzeigen","partir","avis","zobacz","alles","danach","och","zur","dos","vid","att","minimales","maximales","angebot","eine","content","sind","haben","erkek","tavo","gibt","qu"])
+
+s = word
+
+text_word = ' '.join([word for word in s.split(' ') if word not in stopwordList])
+
+
+"""  wordCounting  ----------------------------------------------------------------------------------------------
+from collections import Counter
+
+ Counter(s.split(" "))
+
+"""
+-- sample
+from collections import Counter
+
+counter_word = Counter(text_word.split(" ")) 
+
+
+
+"""  dictionary_matching  ----------------------------------------------------------------------------------------------
+def createDictionary():
+	global dictionary_filename,dictionary
+	f = codecs.open(root_path + dictionary_filename,'r',encoding='utf8').read().split("\n")
+	for row in f:
+		try:
+			word = row.split(" ")[0].strip().lower()
+			cat = row.split(" ",1)[1]
+			dictionary[word] = cat
+		except:
+			pass
+
+			
+createDictionary()			
+dictionary = dict()
+lexto = LexTo()
+
+def dictionary_matching(s):
+	global spark
+	if spark:
+		print 'Spark'
+		sc = SparkContext("local","website_cateogorization")
+		webRDD = sc.parallelize(s.split(" "), "4")
+		category =  webRDD.map(lambda word: (word,1))\
+			.reduceByKey(add)\
+			.map(lambda (word,freq): (search_word(word),freq))\
+			.flatMap(lambda (w,f): [(wo,f) for wo in w.split(",")])\
+			.reduceByKey(add)\
+			.sortBy(lambda a:-1 * a[1])\
+			.collect()
+		cat_idx = 0
+		try:
+			cat = category[cat_idx][0]
+			if cat == '':
+				cat_idx = 1
+				cat = category[cat_idx][0]
+		except:
+			cat = 'None-Cat-s'
+		write_file(root_path + getStrTime() + "dam2.txt", str(cat), "a+")
+	else:
+		print 'No Spark'
+		tmp = dict()
+		for w,f in s.iteritems():
+			print type(w)
+			
+			try:
+				print "w :", w.encode('cp874')
+			except:
+				print "w2 :", w
+			
+			print "f :", f
+			tmp_cat = search_word(w)
+			print "Search :", tmp_cat
+
+			if tmp_cat != '':
+				for cat in tmp_cat.split(","):
+					if tmp.has_key(cat):
+						tmp_freq = tmp[cat]
+						tmp_freq = tmp_freq + f
+						tmp[cat] = tmp_freq
+					else:
+						tmp[cat] = f
+		if len(tmp) > 0:
+			cat = sorted(tmp.items(), key=operator.itemgetter(1), reverse=True)[0]
+		else:
+			cat = 'None-Cat'
+	print "tmp :", tmp
+	print "Cat :", str(cat)
+
+	if 'travel' in cat:
+		return 'travel'
+	elif 'food' in cat:
+		return 'food'
+	elif 'entertain' in cat:
+		return 'entertain'
+	else:
+		return str(cat)
+		
+		
+	output = dictionary_matching(wc)
+
+"""	
+--- sample
+
+if output not in ('None-Cat', 'food', 'travel', 'entertain', 'None-Cat-s'):
+	output = output.split(",")[0][3:-1]
+
+print url,output
